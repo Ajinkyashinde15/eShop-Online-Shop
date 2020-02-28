@@ -1,12 +1,22 @@
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using eShop.API.Models.Entities;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace eShop.API.Models
 {
     public class APIRepository : IAPIRepository
     {
-        public APIRepository()
+        private readonly APIContext _ctx;
+        private readonly ILogger<APIContext> _logger;
+
+        public APIRepository(APIContext ctx, ILogger<APIContext> logger)
         {
+            _ctx=ctx;
+            _logger=logger;
         }
 
         public void AddEntity(object model)
@@ -21,7 +31,8 @@ namespace eShop.API.Models
 
         public IEnumerable<Order> GetAllOrders(bool includeItem)
         {
-            throw new System.NotImplementedException();
+            return _ctx.Orders.Include(o => o.Items).ThenInclude(o => o.Product).
+            ToList();
         }
 
         public IEnumerable<Order> GetAllOrdersByUser(string userName, bool includeItem)
@@ -29,29 +40,37 @@ namespace eShop.API.Models
             throw new System.NotImplementedException();
         }
 
-        public Order GetOrderById(string userName, int id)
+        public Order GetOrderById(string username, int id)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<Product> GetProductsByCategory(string category)
-        {
-            throw new System.NotImplementedException();
+            return _ctx.Orders.Where(o => o.Id == id).Include(o => o.Items).ThenInclude(o => o.Product).
+            FirstOrDefault();
         }
 
         public bool SaveAll()
         {
-            throw new System.NotImplementedException();
+            _ctx.SaveChanges();
+            return true;        
         }
 
-        IEnumerable<Product> GetAllProducts()
+        public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return null;
+            try{
+            _logger.LogInformation(" GetAllProducts Called");
+            return await _ctx.Products
+                    .OrderBy(p=>p.Title)
+                    .ToListAsync();
+
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(" GetAllProducts has error "+ex);    
+                return null;            
+            }
         }
 
-        IEnumerable<Product> IAPIRepository.GetAllProducts()
+        async Task<IEnumerable<Product>> IAPIRepository.GetProductsByCategory(string category)
         {
-            throw new System.NotImplementedException();
+            return  await _ctx.Products.Where(p => p.Category == category).ToListAsync();
         }
     }
 }

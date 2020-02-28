@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace eShop.API.Models.Entities
 {
     public interface IAPIRepository
     {
-        IEnumerable<Product> GetAllProducts();
-        IEnumerable<Product> GetProductsByCategory(string category);
-
+        Task<IEnumerable<Product>> GetAllProducts();
+        Task<IEnumerable<Product>> GetProductsByCategory(string category);
         IEnumerable<Order> GetAllOrders(bool includeItem);
         IEnumerable<Order> GetAllOrdersByUser(string userName, bool includeItem);
         Order GetOrderById(string userName, int id);
