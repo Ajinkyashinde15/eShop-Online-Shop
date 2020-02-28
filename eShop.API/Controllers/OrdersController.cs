@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using eShop.API.ViewModel;
+using eShop.API.Models;
+using AutoMapper;
 
 namespace eShop.API.Controllers
 {
@@ -15,12 +18,14 @@ namespace eShop.API.Controllers
   {
     private readonly IAPIRepository _dutchRepository;
     private readonly ILogger<OrdersController> _logger;
+    private readonly IMapper _mapper;
 
     public OrdersController(IAPIRepository dutchRepository,
-      ILogger<OrdersController> logger)
+    ILogger<OrdersController> logger, IMapper mapper)
     {
       _dutchRepository = dutchRepository;
       _logger = logger;
+      _mapper=mapper;
     }
 
     [HttpGet]
@@ -30,7 +35,7 @@ namespace eShop.API.Controllers
       {
         //var userName = User.Identity.Name;
         var results = _dutchRepository.GetAllOrders(includeItem);
-        return Ok((results));
+        return Ok(_mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(results));
       }
       catch (Exception ex)
       {
@@ -55,13 +60,13 @@ namespace eShop.API.Controllers
       }
     }
     
-    /*
     /// <summary>
     /// Frombody param is used to mention specifically that the data is supposed to come from the body 
     /// and not from the url query string. 
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
+
     [HttpPost]
     public async Task<IActionResult> Post([FromBody]OrderViewModel model)
     {
@@ -76,8 +81,8 @@ namespace eShop.API.Controllers
             newOrder.OrderDate = DateTime.Now;
           }
 
-          var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-          newOrder.User = currentUser;
+         // var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+          //newOrder.User = currentUser;
 
           _dutchRepository.AddOrder(newOrder);
 
@@ -85,9 +90,6 @@ namespace eShop.API.Controllers
           {
             var vm = _mapper.Map<Order, OrderViewModel>(newOrder);
 
-            // in http when you create an entity, you return Created not just Ok.
-            // you also need to return the entity with its url. 
-            // done as part of HATEOAS
             return Created($"/api/orders/{newOrder.Id}", _mapper.Map<Order, OrderViewModel>(newOrder));
           }
         }
@@ -99,11 +101,9 @@ namespace eShop.API.Controllers
       }
       catch (System.Exception ex)
       {
-
         _logger.LogError($"Failed to add a new order: {ex}");
       }
       return BadRequest("Failed to add a new order");
     }
-    */
   }
 }

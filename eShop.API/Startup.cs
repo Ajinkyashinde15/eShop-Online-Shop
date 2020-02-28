@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using eShop.API.Models;
 using eShop.API.Models.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,7 @@ namespace eShop.API
 
             // add IDutchRepository with implementation DutchRepository
             services.AddScoped<IAPIRepository, APIRepository>();
+            services.AddAutoMapper(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

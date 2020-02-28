@@ -31,8 +31,14 @@ namespace eShop.API.Models
 
         public IEnumerable<Order> GetAllOrders(bool includeItem)
         {
-            return _ctx.Orders.Include(o => o.Items).ThenInclude(o => o.Product).
-            ToList();
+            if(includeItem)
+            {
+                return _ctx.Orders.Include(o => o.Items).ThenInclude(o => o.Product).
+                ToList();
+            }else{
+                return _ctx.Orders.
+                ToList();
+            }
         }
 
         public IEnumerable<Order> GetAllOrdersByUser(string userName, bool includeItem)
