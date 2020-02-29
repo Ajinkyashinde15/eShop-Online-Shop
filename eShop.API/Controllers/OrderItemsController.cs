@@ -30,7 +30,7 @@ namespace eShop.API.Controllers
         [HttpGet]
         public IActionResult Get(int orderId)
         {
-        var order = _dutchRepository.GetOrderById("", orderId);
+        var order = _dutchRepository.GetOrderById(User.Identity.Name, orderId);
         if (order != null) return Ok(_mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemViewModel>>(order.Items));
         return NotFound();
         }

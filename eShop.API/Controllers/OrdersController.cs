@@ -19,13 +19,14 @@ namespace eShop.API.Controllers
     private readonly IAPIRepository _dutchRepository;
     private readonly ILogger<OrdersController> _logger;
     private readonly IMapper _mapper;
-
+    private readonly UserManager<StoreUser> _userManager;
     public OrdersController(IAPIRepository dutchRepository,
-    ILogger<OrdersController> logger, IMapper mapper)
+    ILogger<OrdersController> logger, IMapper mapper, UserManager<StoreUser> userManager)
     {
       _dutchRepository = dutchRepository;
       _logger = logger;
       _mapper=mapper;
+      _userManager=userManager;
     }
 
     [HttpGet]
@@ -33,8 +34,8 @@ namespace eShop.API.Controllers
     {
       try
       {
-        //var userName = User.Identity.Name;
-        var results = _dutchRepository.GetAllOrders(includeItem);
+        var userName = User.Identity.Name;
+        var results = _dutchRepository.GetAllOrdersByUser(userName, includeItem);
         return Ok(_mapper.Map<IEnumerable<Order>, IEnumerable<OrderViewModel>>(results));
       }
       catch (Exception ex)
@@ -49,7 +50,7 @@ namespace eShop.API.Controllers
     {
       try
       {
-        var order = _dutchRepository.GetOrderById("", id);
+        var order = _dutchRepository.GetOrderById(User.Identity.Name, id);
         if (order != null) return Ok((order));
         return NotFound();
       }
@@ -67,7 +68,7 @@ namespace eShop.API.Controllers
     /// <param name="model"></param>
     /// <returns></returns>
 
-    [HttpPost]
+    [HttpPost] 
     public async Task<IActionResult> Post([FromBody]OrderViewModel model)
     {
       //add the order to the database
@@ -81,8 +82,8 @@ namespace eShop.API.Controllers
             newOrder.OrderDate = DateTime.Now;
           }
 
-         // var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
-          //newOrder.User = currentUser;
+         var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+          newOrder.User = currentUser;
 
           _dutchRepository.AddOrder(newOrder);
 

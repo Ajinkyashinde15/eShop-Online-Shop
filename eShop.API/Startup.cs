@@ -31,12 +31,11 @@ namespace eShop.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            /*services.AddIdentity<StoreUser, IdentityRole>(cfg =>
+            services.AddIdentity<StoreUser, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<APIContext>();
-            */
-
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc().AddJsonOptions(opt=>opt.SerializerSettings.ReferenceLoopHandling=ReferenceLoopHandling.Ignore);
             
@@ -72,7 +71,7 @@ namespace eShop.API
                 var seeder = scope.ServiceProvider.GetService<Seeder>();
                 //making configure wait for seed to finish
                 //cannot make Configure async as it isn't expected to run asynchronously
-                seeder.Seed();//.Wait();
+                seeder.Seed().Wait();
                 }
             }
             

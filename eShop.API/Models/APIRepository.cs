@@ -43,12 +43,21 @@ namespace eShop.API.Models
 
         public IEnumerable<Order> GetAllOrdersByUser(string userName, bool includeItem)
         {
-            throw new System.NotImplementedException();
+             if(includeItem)
+            {
+                return _ctx.Orders.Include(o => o.Items).ThenInclude(o => o.Product).
+                Where(o=>o.User.UserName==userName).
+                ToList();
+            }else{
+                return _ctx.Orders.Where(o=>o.User.UserName==userName).
+                ToList();
+            }
         }
 
         public Order GetOrderById(string username, int id)
         {
             return _ctx.Orders.Where(o => o.Id == id).Include(o => o.Items).ThenInclude(o => o.Product).
+            Where(o => o.Id == id && o.User.UserName == username).
             FirstOrDefault();
         }
 

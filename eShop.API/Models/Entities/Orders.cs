@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using eShop.API.Models.Entities;
 
 namespace eShop.API.Models
 {
@@ -9,6 +10,6 @@ namespace eShop.API.Models
         public DateTime OrderDate { get; set; }
         public string OrderNumber { get; set; }
         public ICollection<OrderItem> Items { get; set; }
-        //public StoreUser User { get; set; }
+        public StoreUser User { get; set; }
     }
 }

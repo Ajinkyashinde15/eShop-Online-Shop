@@ -1,9 +1,10 @@
+using eShop.API.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.API.Models
 {
-    public class APIContext :DbContext //: IdentityDbContext<StoreUser>
+    public class APIContext : IdentityDbContext<StoreUser>
     {
         public APIContext(DbContextOptions<APIContext> dbContextOptions) : base(dbContextOptions)
         {}
